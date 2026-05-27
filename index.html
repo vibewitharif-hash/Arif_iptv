@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My IPTV</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+  <style>
+    body{
+      background:#000;
+      color:white;
+      text-align:center;
+      font-family:Arial;
+      padding: 20px;
+    }
+
+    video{
+      width:90%;
+      max-width:900px;
+      margin-top:20px;
+      border-radius:10px;
+    }
+
+    .channel-info {
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .buttons-container {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button{
+      padding:10px 20px;
+      margin:5px;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      background-color: #444;
+      color: white;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #666;
+    }
+
+    button.active {
+      background-color: #ff6b6b;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>📺 My IPTV</h1>
+
+<video id="video" controls autoplay></video>
+
+<div class="channel-info" id="channelInfo">Select a channel</div>
+
+<div class="buttons-container" id="buttonContainer"></div>
+
+<script>
+  const video = document.getElementById('video');
+  const buttonContainer = document.getElementById('buttonContainer');
+  const channelInfo = document.getElementById('channelInfo');
+  let currentChannel = null;
+
+  // Define your channels here
+  const channels = [
+    { name: 'Channel 1', url: 'YOUR_M3U8_LINK' },
+    { name: '⚽ Sports', url: 'YOUR_SPORTS_M3U8_LINK' }
+  ];
+
+  // Create buttons for each channel
+  channels.forEach((channel, index) => {
+    const button = document.createElement('button');
+    button.textContent = channel.name;
+    button.onclick = () => playChannel(channel.url, channel.name, button);
+    buttonContainer.appendChild(button);
+  });
+
+  function playChannel(url, name, buttonElement) {
+    currentChannel = name;
+    channelInfo.textContent = `Now Playing: ${name}`;
+
+    // Update active button styling
+    document.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+    buttonElement.classList.add('active');
+
+    if(Hls.isSupported()){
+      const hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(video);
+    } else if(video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = url;
+    }
+  }
+</script>
+
+</body>
+</html>
